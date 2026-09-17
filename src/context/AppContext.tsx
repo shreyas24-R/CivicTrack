@@ -7,7 +7,7 @@ import {
   NotificationItem,
   SupportedLanguage,
   UserRole,
-  IssueStatus,
+  CivicIssueStatus,
   IssueCategory,
   IssueSeverity,
   AuthSession,
@@ -135,7 +135,7 @@ interface AppContextType {
   flagReport: (issueId: string) => Promise<void>;
   deleteReport: (issueId: string) => Promise<{ success: boolean; error?: string }>;
   assignWorker: (issueId: string, workerId: string, targetHours: number, instructions?: string) => void;
-  updateIssueStatus: (issueId: string, newStatus: IssueStatus, remarks?: string) => void;
+  updateIssueStatus: (issueId: string, newStatus: CivicIssueStatus, remarks?: string) => void;
   resolveIssueWithProof: (issueId: string, afterPhotoUrl: string, remarks: string) => void;
   markNotificationsAsRead: () => void;
   dismissToast: (id: string) => void;
@@ -815,7 +815,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // Update Status
-  const updateIssueStatus = (issueId: string, newStatus: IssueStatus, remarks?: string) => {
+  const updateIssueStatus = (issueId: string, newStatus: CivicIssueStatus, remarks?: string) => {
     updateListingStatusDocument(issueId, newStatus, remarks).catch(console.error);
 
     setIssues((prev) =>

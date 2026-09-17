@@ -17,7 +17,7 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject, listAll } from 'firebase/storage';
 import { db, storage, isFirebaseConfigured } from '../lib/firebase';
-import { CivicIssue, IssueCategory, IssueSeverity, IssueStatus, TimelineEvent } from '../types';
+import { CivicIssue, IssueCategory, IssueSeverity, CivicIssueStatus, TimelineEvent } from '../types';
 import { initialIssues } from '../data/mockData';
 import { getAssetUrl } from '../utils/assetUrl';
 import { normalizePhone } from '../utils/ownership';
@@ -37,7 +37,7 @@ export interface FirestoreListing {
   reporterName: string;
   reporterPhone?: string;
   includeReporterContact?: boolean;
-  status: IssueStatus;
+  status: CivicIssueStatus;
   upvotes: number;
   confirmedBy: string[];
   ward: string;
@@ -632,7 +632,7 @@ export const assignWorkerToListingDocument = async (
     if (l.id === listingId) {
       return {
         ...l,
-        status: 'In Progress' as IssueStatus,
+        status: 'In Progress' as CivicIssueStatus,
         assignedWorkerId: workerId,
         assignedWorkerName: workerName,
         targetResolutionHours: targetHours,
@@ -648,7 +648,7 @@ export const assignWorkerToListingDocument = async (
 // Update Listing Status
 export const updateListingStatusDocument = async (
   listingId: string,
-  newStatus: IssueStatus,
+  newStatus: CivicIssueStatus,
   remarks?: string,
   actor: string = 'Civic Admin'
 ): Promise<void> => {
@@ -728,7 +728,7 @@ export const resolveListingDocument = async (
     if (l.id === listingId) {
       return {
         ...l,
-        status: 'Resolved' as IssueStatus,
+        status: 'Resolved' as CivicIssueStatus,
         resolvedPhotoUrl: proofUrl,
         resolutionRemarks: remarks,
         resolvedAt: 'Just now',

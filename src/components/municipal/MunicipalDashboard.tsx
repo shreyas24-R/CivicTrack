@@ -6,21 +6,29 @@ import { ComplaintMap } from './ComplaintMap';
 import { ComplaintTable } from './ComplaintTable';
 import { AssignWorkerModal } from './AssignWorkerModal';
 import { IssueTrackerModal } from '../citizen/IssueTrackerModal';
+import { AssetHistoryTimeline } from './AssetHistoryTimeline';
+import { MOCK_ASSETS } from '../../services/mockAssetHistoryService';
 import { createRipple } from '../common/MaterialRipple';
 import {
   LayoutDashboard,
   Map as MapIcon,
   Table as TableIcon,
+  History,
+  ShieldAlert,
+  ChevronRight,
 } from 'lucide-react';
 
 export const MunicipalDashboard: React.FC = () => {
   const { t } = useApp();
-  const [viewMode, setViewMode] = useState<'map' | 'table' | 'split'>('split');
+  const [viewMode, setViewMode] = useState<'split' | 'map' | 'table' | 'history'>('split');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [severityFilter, setSeverityFilter] = useState<string>('all');
 
   const [selectedIssue, setSelectedIssue] = useState<CivicIssue | null>(null);
   const [assigningIssue, setAssigningIssue] = useState<CivicIssue | null>(null);
+
+  // Asset History Inspector State
+  const [selectedAssetId, setSelectedAssetId] = useState<string>('ast-8801-high');
 
   return (
     <div className="w-full bg-[#F8F9FA] text-[#202124] pb-12 font-sans">
@@ -46,7 +54,7 @@ export const MunicipalDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* View Toggle (Split / Map / Table) */}
+          {/* View Switcher Bar */}
           <div className="flex items-center space-x-2">
             <div className="bg-gray-100 p-0.5 rounded border border-[#DADCE0] flex items-center">
               <button
@@ -90,6 +98,21 @@ export const MunicipalDashboard: React.FC = () => {
                 <TableIcon className="w-3.5 h-3.5" />
                 <span>Table Only</span>
               </button>
+
+              <button
+                onClick={(e) => {
+                  createRipple(e);
+                  setViewMode('history');
+                }}
+                className={`flex items-center space-x-1 px-3 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition-all ripple-surface ${
+                  viewMode === 'history'
+                    ? 'bg-[#1A73E8] text-white shadow-elevation-1'
+                    : 'text-[#1A73E8] hover:bg-blue-50'
+                }`}
+              >
+                <History className="w-3.5 h-3.5" />
+                <span>Problem History</span>
+              </button>
             </div>
           </div>
         </div>
@@ -100,7 +123,52 @@ export const MunicipalDashboard: React.FC = () => {
         {/* KPI Analytics Overview */}
         <AnalyticsOverview />
 
-        {/* Dynamic Views */}
+        {/* View Mode: Problem History Module */}
+        {viewMode === 'history' && (
+          <div className="space-y-6">
+            {/* Quick Test Preset Selector for Admin Reviewers */}
+            <div className="p-4 bg-white border border-[#DADCE0] rounded-xl shadow-xs space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center space-x-2">
+                  <ShieldAlert className="w-5 h-5 text-[#1A73E8]" />
+                  <h3 className="text-sm font-bold text-[#202124]">
+                    Select Asset Test Scenario:
+                  </h3>
+                </div>
+                <span className="text-xs text-[#5F6368]">
+                  Test Heuristics & Recurring Defect Detection Rules
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                {MOCK_ASSETS.map((ast) => (
+                  <button
+                    key={ast.id}
+                    onClick={() => setSelectedAssetId(ast.id)}
+                    className={`p-3 rounded-lg border text-left transition-all flex items-center justify-between ${
+                      selectedAssetId === ast.id
+                        ? 'border-[#1A73E8] bg-blue-50/70 shadow-xs'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                    }`}
+                  >
+                    <div className="space-y-0.5 truncate">
+                      <div className="text-xs font-bold text-[#202124] truncate">
+                        {ast.assetTag}
+                      </div>
+                      <div className="text-[11px] text-[#5F6368]">{ast.ward}</div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400 shrink-0 ml-2" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Main Reusable Asset History Timeline Component */}
+            <AssetHistoryTimeline assetId={selectedAssetId} key={selectedAssetId} />
+          </div>
+        )}
+
+        {/* Dynamic Views: Split / Map / Table */}
         {viewMode === 'split' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full max-w-full min-w-0">
             {/* Left: Interactive Map (5 Cols) */}
@@ -192,3 +260,4 @@ export const MunicipalDashboard: React.FC = () => {
     </div>
   );
 };
+

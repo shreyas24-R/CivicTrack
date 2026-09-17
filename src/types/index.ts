@@ -9,11 +9,11 @@ export type IssueCategory =
 
 export type IssueSeverity = 'Low' | 'Medium' | 'High' | 'Critical';
 
-export type IssueStatus = 'Submitted' | 'Acknowledged' | 'In Progress' | 'Resolved';
+export type CivicIssueStatus = 'Submitted' | 'Acknowledged' | 'In Progress' | 'Resolved';
 
 export interface TimelineEvent {
   id: string;
-  status: IssueStatus;
+  status: CivicIssueStatus;
   timestamp: string;
   title: string;
   description: string;
@@ -35,7 +35,7 @@ export interface CivicIssue {
   category: IssueCategory;
   customCategory?: string;
   severity: IssueSeverity;
-  status: IssueStatus;
+  status: CivicIssueStatus;
   description: string;
   location: IssueLocation;
   photoUrl: string;
